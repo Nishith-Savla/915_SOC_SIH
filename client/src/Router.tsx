@@ -3,6 +3,7 @@ import { BrowserRouter,Routes, Route } from "react-router-dom"
 import SignIn from './SignIn'
 import App from './App'
 import NotFound from './NotFound'
+// import Start from './Start'
 
 const Router = () =>
 {
@@ -13,6 +14,7 @@ const Router = () =>
             <BrowserRouter> 
             <Routes>
                 <Route path="/" element={<SignIn />}/>
+                {/* <Route path="/start" element={<Start/>}/> */}
 
                 <Route path="/dashboard" element={<App/>}/>
 

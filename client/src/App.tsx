@@ -87,11 +87,25 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
 function App() {
 
   const [fileLabel, setfileLabel] = React.useState<any>('Upload File');
+   const data = [
+  ["Task", "Hours per Day"],
+  ["Work", 11],
+  ["Eat", 2],
+  ["Commute", 2],
+  ["Watch TV", 2],
+  ["Sleep", 7],
+];
+  const [vendorPie, setVendorPie] = React.useState<any>([]);
+  const [protocolPie, setProtocolPie] = React.useState<any>([]);
+  const [assetData, setassetData] = React.useState<any>([]);
+
+  
+
+
 
 
   const [openLoading, setOpenLoading] = React.useState(false);
   const [tabledisabled, setTableDisabled] = React.useState(true);
-  // const [analysisdisabled, setAnalysisDisabled] = React.useState(true);
 
 
   const [progress, setProgress] = React.useState(10);
@@ -119,10 +133,8 @@ function App() {
     const timer = setInterval(() => {
       setProgress((prevProgress) => (prevProgress >= 100 ? (
         (() => {
-          // Do something when the progress reaches 100
           clearInterval(timer);
           handleCloseLoading()
-          // setAnalysisDisabled(false)
           setProgress(10)
 
         })(),
@@ -186,7 +198,7 @@ function App() {
       const data = new FormData();
       data.append('data', file);
   
-      let response = await httpClient.post('//localhost:5000/analyze',data
+      let response = await httpClient.post('//192.168.173.140:5000/analyze',data
        
       );
       
@@ -194,6 +206,13 @@ function App() {
         // handleClickAlert()
         setfileLabel(file.name)
         console.log(response.data)
+        console.log(response.data['connections'])
+        setVendorPie(response.data['vendor_plots'])
+        setProtocolPie(response.data['protocol_plots'])
+        setassetData(response.data['connections'])
+
+        // setassetData(response.data['connections'])
+
 
       }
       else{
@@ -212,13 +231,13 @@ function App() {
 
   }
 
-  const assetData = [
-    { mac: '5c:88:16:ac:61:a9',vendor:'Rockwell Automation',ipaddr:'172.14.34.22',protocol:'modbus',count:'1'},
-    { mac: 'd8:9e:f3:80:0f:8c',vendor:'Dell Inc',ipaddr:'172.14.34.56',protocol:'modbus',count:'1'},
-    { mac: 'a4:5f:27:90:5e:94',vendor:'Scnider',ipaddr:'172.14.34.84',protocol:'modbus',count:'1' },
+  // const assetData = [
+  //   { mac: '5c:88:16:ac:61:a9',vendor:'Rockwell Automation',ipaddr:'172.14.34.22',protocol:'modbus',count:'1'},
+  //   { mac: 'd8:9e:f3:80:0f:8c',vendor:'Dell Inc',ipaddr:'172.14.34.56',protocol:'modbus',count:'1'},
+  //   { mac: 'a4:5f:27:90:5e:94',vendor:'Scnider',ipaddr:'172.14.34.84',protocol:'modbus',count:'1' },
    
 
-  ];
+  // ];
 
   const initialNodes = [
     { id: '1', position: { x: 0, y: 0 }, data: { label: '127.0.0.1' } },
@@ -233,21 +252,20 @@ function App() {
 
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
- const data = [
-  ["Task", "Hours per Day"],
-  ["Work", 11],
-  ["Eat", 2],
-  ["Commute", 2],
-  ["Watch TV", 2],
-  ["Sleep", 7],
-];
 
-const options = {
-  title: "My Daily Activities",
+
+const optionsVendor = {
+  title: "Vendor Details",
   pieHole: 0.4,
   is3D: false,
   legend: { position: 'bottom', alignment: 'start' }
-  // 'chartArea': {'weight': '100vh'},
+};
+
+const optionsProtocol = {
+  title: "Protocol Details",
+  pieHole: 0.4,
+  is3D: false,
+  legend: { position: 'bottom', alignment: 'start' }
 };
 const svgIcon = (
   <Icon>
@@ -269,18 +287,7 @@ const svgIcon = (
              
             }}
           >
-            {/* <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: '36px',
-                ...(open && { display: 'none' }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton> */}
+            
             <Typography
               component="h1"
               variant="h6"
@@ -303,8 +310,7 @@ const svgIcon = (
         variant="outlined"
         sx={{color: 'white'}}
         component={Link} to="/kibana"
-        // onClick={logout}
-        // sx={{ marginRight: "1rem" }}
+        
       >
       Log Analysis
         </Button>
@@ -322,8 +328,7 @@ const svgIcon = (
         variant="outlined"
         sx={{color: 'white'}}
         component={Link} to="/"
-        // onClick={logout}
-        // sx={{ marginRight: "1rem" }}
+      
       >
       Logout
         </Button>
@@ -352,99 +357,26 @@ const svgIcon = (
                     p: 1,
                     display: 'flex',
                     flexDirection: 'column',
-                    // height:400
                     
                   }}
                 >
-                  {/* <Stack  
-                    direction={'column'}>
-                  
-                    <Typography component="span" variant='h5' sx={{color: 'black'}}>
-                    Asset Identification
-                  </Typography>
-              
-                        <Stack  
-                          direction={'row'}
-                          justifyContent="space-evenly"
-                          alignItems="center"
-                          sx={{mt:3}}
-                          spacing={3} >
-                            <Stack  
-                          direction={'row'}
-                          spacing={3}
-                          >
-                            <TextField sx={{mt:0.5}}id="filled-basic" size="small"  label={fileLabel} disabled variant="filled" />
-                            
-                            <Button
-                            component="label"
-                            style={{padding:"0.5rem",paddingTop:"0.5rem",height:"3rem",marginTop:"0.3rem"}}
-                            sx={{color:'black',backgroundColor:'#e6de10',"&:hover": {backgroundColor: "#ccc50e" }}}
-                            // disabled={!analysisdisabled}
-
-                            size='small'
-                            variant="contained"
-                          >
-                            Browse
-                            <input type="file" accept=".pcap" hidden onChange={handleFileUpload} />
-
-                          </Button>
-                          </Stack>
-                          <Button
-                            component="label"
-                            style={{padding:"0.5rem",paddingTop:"0.5rem",height:"3rem",marginTop:"0.3rem"}}
-                            size='small'
-                            color='success'
-                            variant="contained"
-                            // disabled={analysisdisabled}
-                            onClick={handleOpenLoading}
-                          >
-                            Analyse
-                          </Button>
-                          
-                          
-                          </Stack>
-                          <Stack  
-                          direction={'row'}
-                          justifyContent="space-evenly"
-                          alignItems="center"
-                          sx={{mt:3}}
-                          spacing={4} >
-                            
-                           
-
-
-                          <Button
-                            component="label"
-                            style={{padding:"0.5rem",paddingTop:"0.5rem",height:"3rem",marginTop:"0.3rem"}}
-                            size='small'
-                            variant="contained"
-                            onClick={handleOpenDiagram}
-
-                          >
-                            Network Diagram
-                          </Button>
-
-                          
-                          
-                          </Stack>
-                    </Stack> */}
+                 
                     <Stack  
                           direction={'row'}
-                          // justifyContent="space-evenly"
                           alignItems="center"
                           
                            >
                 <Chart
                 chartType="PieChart"
-                data={data}
-                options={options}
+                data={vendorPie}
+                options={optionsVendor}
                 width={"43vh"}
                 height={"47.5vh"}
               />
               <Chart
                 chartType="PieChart"
-                data={data}
-                options={options}
+                data={protocolPie}
+                options={optionsProtocol}
                 width={"43vh"}
                 height={"47.5vh"}
               />
@@ -492,10 +424,7 @@ const svgIcon = (
                   <Button
                   component="label"
                   style={{padding:"0rem",paddingTop:"1rem",height:"3.4rem",marginTop:"1.5rem"}}
-                  // sx={{color:'black',backgroundColor:'#e6de10',"&:hover": {backgroundColor: "#ccc50e" }}}
-                  // startIcon={svgIcon}
                   size='small'
-                  // color='success'
                   variant="contained"
                 >
                   View
@@ -558,7 +487,6 @@ const svgIcon = (
                     display: 'flex',
                     flexDirection: 'column',
                     height: 230,
-                    // width:600
                   }}
                 >
                   <Typography component="span" variant='h5' sx={{color: 'black'}}>
@@ -598,29 +526,7 @@ const svgIcon = (
                           alignItems="center"
                           sx={{mt:3}}
                            >
-                            {/* <Stack 
-                            direction={'row'}>
-                            <Button
-                            component="label"
-                            disabled={tabledisabled}
-                            style={{padding:"0.5rem",paddingTop:"0.5rem",height:"3rem",marginTop:"0.3rem",borderRadius:'0rem'}}
-                            size='small'
-                            variant="contained"
-                            onClick={handleAssetsTable}
-                          >
-                            Assets Table
-                          </Button>
-                          <Button
-                            component="label"
-                            disabled={!tabledisabled}
-                            onClick={handleCveTable}
-                            style={{padding:"0.5rem",paddingTop:"0.5rem",height:"3rem",marginTop:"0.3rem",borderRadius:'0rem'}}
-                            size='small'
-                            variant="contained"
-                          >
-                            CVE Table
-                          </Button>
-                          </Stack> */}
+                            
                         <Button
                             component="label"
                             style={{padding:"0.5rem",paddingTop:"0.5rem",height:"3rem",marginTop:"0.3rem"}}
@@ -638,14 +544,9 @@ const svgIcon = (
                   
                 </Grid>
               </Grid>
-              {/* <Grid item xs={6} >
-                <Paper elevation={6} sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                
-                  </Paper>
-            </Grid> */}
+              
               <Grid item xs={12} >
                 <Paper elevation={6} sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                {/* <Title>Cases</Title> */}
                 <Typography component="span" variant='h5' sx={{color: 'black'}}>
                     Assets Table
                   </Typography>
@@ -658,12 +559,10 @@ const svgIcon = (
 
                         <StyledTableCell  sx={{fontWeight: 'bold'}} align="center">IP Address</StyledTableCell>
                         <StyledTableCell  sx={{fontWeight: 'bold'}} align="center">Protocol</StyledTableCell>
-                        {/* <StyledTableCell  sx={{fontWeight: 'bold'}} align="center">Count</StyledTableCell> */}
                         <StyledTableCell  sx={{fontWeight: 'bold'}} align="center">CVE Table</StyledTableCell>
 
 
 
-                        {/* <StyledTableCell  sx={{fontWeight: 'bold'}} align="right">Delete Case</StyledTableCell> */}
 
                       </TableRow>
                     </TableHead>
@@ -671,24 +570,13 @@ const svgIcon = (
                       {assetData?.map((row:any,index:any) => (
                         <StyledTableRow key={index}>
 
-                          <StyledTableCell>{row.mac}</StyledTableCell>
-                          <StyledTableCell align="center">{row.vendor}</StyledTableCell>
-                          <StyledTableCell align="center">{row.ipaddr}</StyledTableCell>
-                          <StyledTableCell align="center">{row.protocol}</StyledTableCell>
+                          <StyledTableCell>{row.MAC}</StyledTableCell>
+                          <StyledTableCell align="center">{row.Vendor}</StyledTableCell>
+                          <StyledTableCell align="center">{row.IP}</StyledTableCell>
+                          <StyledTableCell align="center">{row.Protocol}</StyledTableCell>
 
-                          {/* <StyledTableCell align="center">{row.count}</StyledTableCell> */}
                           <StyledTableCell align="center">
-                          {/* <Button
-                            component="label"
-                            // disabled={!tabledisabled}
-                            // onClick={handleCveTable}
-                            startIcon={<OpenInNewIcon/>}
-                            // style={{padding:"0.5rem"}}
-                            size='small'
-                            variant="contained"
-                          >
-                            
-                          </Button> */}
+                          
                           <IconButton color="primary" aria-label="upload picture" component="label">
                         <OpenInNewIcon />
                       </IconButton>
@@ -711,21 +599,17 @@ const svgIcon = (
 
           </Container>
 
+
         </Box>
       </Box>
 
       <Dialog open={openDiagram} onClose={handleCloseDiagram} 
       fullWidth={true}
-      // fullHeight={fullHeight}
       maxWidth={'lg'}>
       
         <DialogTitle>Network Diagram</DialogTitle>
         <DialogContent>
-          {/* <DialogContentText
-            sx={{pb:2}}
-            >
-            
-          </DialogContentText> */}
+          
           <div style={{ width: '72rem', height: '35rem' }}>
                 <ReactFlow 
                 nodes={nodes} 
@@ -737,7 +621,6 @@ const svgIcon = (
                 <Background color="#aaa" gap={8} />
                 <MiniMap style={minimapStyle} zoomable pannable />
                 </ReactFlow>
-                {/* <StaticGraph/> */}
                 </div>
         </DialogContent>
         <DialogActions>
@@ -747,7 +630,6 @@ const svgIcon = (
 
       <Dialog open={openLoading} onClose={handleCloseLoading} 
       fullWidth={true}
-      // fullHeight={fullHeight}
       maxWidth={'sm'}>
       
         <DialogTitle>Analyzing PCAP...</DialogTitle>
