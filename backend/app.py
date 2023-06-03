@@ -11,6 +11,7 @@ import requests
 import plotly.express as px 
 import plotly.graph_objects as go
 import html
+import json
 
 # ML
 import xml.etree.ElementTree as ET
@@ -41,7 +42,7 @@ def analyze():
     predicted_device=set()
     
     # Process the pcap file
-    incount, outcount, connections,plot_html, unique_vendors,len_vendors = process_pcap(pcap_path, predicted_device)
+    protocol_counts, connections, vendor_plots = process_pcap(pcap_path, predicted_device)
 
     # Get the name of the pcap file
     pcap_name = os.path.basename(pcap_path) 
@@ -49,8 +50,18 @@ def analyze():
     # Render the results template with the connection information and the network graph
     # return render_template('results.html', connections=connections, incount=incount, outcount=outcount, arp_table=arp_table,plot_html=plot_html)
     print("=>",pcap_name)
-    print("==>",len_vendors)
-    return render_template('results.html', connections=connections, incount=incount, outcount=outcount, arp_table=arp_table, plot_html=plot_html, pcap_name=pcap_name, unique_vendors=unique_vendors,len_vendors=len_vendors,predicted_devices=predicted_device)
+    # print("==>",len_vendors)
+
+    return_obj = {
+        'connections': json.dumps(connections),
+        'protocol_plots': json.dumps(protocol_counts),
+        'vendor_plots': json.dumps(vendor_plots),
+        'predicted_devices': list(predicted_device)
+    }
+
+    print(return_obj)
+    input("Wait:10")
+    return jsonify(return_obj)
 
 
 # Define the home endpoint
