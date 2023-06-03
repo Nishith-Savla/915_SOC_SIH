@@ -34,6 +34,7 @@ CORS(app, supports_credentials=True)
 @app.route('/analyze', methods=['POST'])
 def analyze():
     # Get the uploaded file from the request object
+    print(request.files)
     pcap_file = request.files['data']
     # Save the uploaded file to disk in the UPLOAD_FOLDER directory
     filename = secure_filename(pcap_file.filename)
@@ -57,8 +58,8 @@ def analyze():
 
     return_obj = {
         'connections': json.dumps(connections),
-        'protocol_plots': json.dumps(protocol_counts),
-        'vendor_plots': json.dumps(vendor_plots),
+        'protocol_plots': protocol_counts,
+        'vendor_plots': vendor_plots,
         'predicted_devices': list(predicted_device)
     }
 

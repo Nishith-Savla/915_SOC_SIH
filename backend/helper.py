@@ -11,6 +11,7 @@ import requests
 import plotly.express as px 
 import plotly.graph_objects as go
 import html
+import numpy as np
 
 # ML
 import xml.etree.ElementTree as ET
@@ -37,7 +38,7 @@ def loadData(filename):
     dbfile.close()
     return db
 
-def extract_tcp_signature(packet, predicted_device):
+def extract_tcp_signature(packet, predicted_device, model, vectorizer):
     tcp = packet[TCP]
     # print(tcp.options)
     # tcp_flag = tcp.flags.flagrepr()
@@ -108,7 +109,10 @@ def process_pcap(filename, predicted_device):
     # TODO: Check the format for pyshark.FileCapture.
     cap = pyshark.FileCapture(filename)
     protocol__count = {}
-    model = loadData("AssetIdentification.pickle")
+    data = loadData("AssetIdentification1.pickle")
+    print(data)
+    model = data['model']
+    vectorizer = data['vectorizer']
     ## ARP ADD
     # Get the ARP table
     arp_table = get_arp_table(filename)
@@ -129,7 +133,16 @@ def process_pcap(filename, predicted_device):
     labels = list(protocol__count.keys())
     values = list(protocol__count.values())
 
-    protocol_counts = dict(zip(labels, values))
+    protocol_plots = [['Protocol', 'Network Count']]
+    for i in protocol__count.keys():
+        name = i
+        if not name:
+            name = "Unknown"
+        protocol_plots.append([name, protocol__count[i]])
+
+    protocol_counts = zip(labels, values)
+    print(protocol_counts)
+    protocol_counts = dict(protocol_counts)
 
     # Create a dictionary to store the MAC addresses and vendor names
     mac_vendor_dict = {}
@@ -138,6 +151,9 @@ def process_pcap(filename, predicted_device):
     connections = []
     # Create a dictionary to store the unique vendor names for each IP address
     vendor_map = {}
+    all_protocols = []
+    outcount = 0
+    incount = 0
     # Iterate over each packet in the pcap file
     for packet in cap:
         protocol="Unknown"       
@@ -175,7 +191,7 @@ def process_pcap(filename, predicted_device):
                     vendor = mac_vendor_resolver.get_manuf(src_mac)
                     vendor_map[src_mac] = {
                         'vendor_name': vendor,
-                        'ip_addresses': set([src_ip])  # Store unique IP addresses in a set
+                        'ip_addresses': list(set([src_ip]))  # Store unique IP addresses in a set
                     }
                 else:
                     # Append the IP address to the existing MAC address entry
@@ -185,10 +201,10 @@ def process_pcap(filename, predicted_device):
                 ttl = int(packet.ip.ttl)
                 window_size = int(packet.tcp.window_size)
  
-                os_name, os_image = get_os_details(ttl, window_size) 
+                os_name, os_image = get_os_details(ttl, window_size)                 
                
                 for layer in layers:
-                    all_protocols.add(layer.layer_name)
+                    all_protocols.append(layer.layer_name)
 
                     protocol=layer.layer_name
                     # Create a connection dictionary
@@ -209,9 +225,8 @@ def process_pcap(filename, predicted_device):
                     connections.append(connection_dict)
                     outcount += 1
         except Exception as e:
-            # print(f"Error processing packet: {e}")
+            print(f"Error processing packet: {e}")
             pass
-    print(all_protocols)
 
 
     # Iterate over each ARP table entry
@@ -228,31 +243,45 @@ def process_pcap(filename, predicted_device):
         pass
     else:
         # Add the IP address to the existing MAC address entry
-        vendor_map[mac_address]['ip_addresses'].add(ip_address)
+        print(type(vendor_map[mac_address]['ip_addresses']))
+        try:
+            vendor_map[mac_address]['ip_addresses'].add(ip_address)
+        except:
+            pass
 
 
     # Get the unique assets
     # Convert the vendor map to a list for rendering in the template
     unique_vendors = list(vendor_map.values())
-    vendor_plots = dict()
+    vendor_plots = [['Vendor', 'Device Count']]
     for i in vendor_map.keys():
         name = vendor_map[i]['vendor_name']
         if not name:
             name = "Unknown"
-        vendor_plots[name] = len(vendor_map[i]['ip_addresses'])
+        vendor_plots.append([name, len(vendor_map[i]['ip_addresses'])])
                
     
     # PACKET ML
     packets_ = rdpcap(filename)
     for packet in packets_:
         if TCP in packet:
-            extract_tcp_signature(packet,predicted_device)
+            extract_tcp_signature(packet,predicted_device, model, vectorizer)
     print(predicted_device)
     # Convert the list of connections to a pandas dataframe
 
+    # processing connections for the table
     df = pd.DataFrame(connections)
+    source_list = list(df[['src_mac', 'src_vendor','src_ip', 'protocol']].values)
+    dest_list = list(df[['dst_mac', 'dst_vendor','dst_ip', 'protocol']].values)
+    columns = ['MAC', 'Vendor', 'IP', 'Protocol']
+    arr = np.concatenate((source_list, dest_list), axis=0)
+    combined_df = pd.DataFrame(arr)
+    combined_df.columns = columns
+    combined_df.drop_duplicates(inplace=True)
+    combined_df = combined_df.groupby(['MAC', 'Vendor', 'IP'])['Protocol'].apply(','.join).reset_index()
+    combined_df.to_dict('records')
     # Return the connection information
-    return protocol_counts, df.to_dict('records'), vendor_plots
+    return protocol_plots, combined_df.to_dict('records'), vendor_plots
 
 
 # def extract_tcp_signature(packet):
