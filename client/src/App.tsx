@@ -87,25 +87,35 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
 function App() {
 
   const [fileLabel, setfileLabel] = React.useState<any>('Upload File');
-   const data = [
-  ["Task", "Hours per Day"],
-  ["Work", 11],
-  ["Eat", 2],
-  ["Commute", 2],
-  ["Watch TV", 2],
-  ["Sleep", 7],
-];
+  
   const [vendorPie, setVendorPie] = React.useState<any>([]);
   const [protocolPie, setProtocolPie] = React.useState<any>([]);
   const [assetData, setassetData] = React.useState<any>([]);
+  const [cveData, setcveData] = React.useState<any>([]);
+
+
+  const [vendorlist, setvendorlist] = React.useState<any>([]);
+  const [maclist, setmaclist] = React.useState<any>([]);
+  const [iplist, setiplist] = React.useState<any>([]);
+  const [protocollist, setprotocollist] = React.useState<any>([]);
+
+
 
   
+  const [openGraph, setOpenGraph] = React.useState(true);
 
+  const handleClickOpenGraph = () => {
+    setOpenGraph(true);
+  };
 
+  const handleCloseGraph = () => {
+    setOpenGraph(false);
+  };
 
 
   const [openLoading, setOpenLoading] = React.useState(false);
-  const [tabledisabled, setTableDisabled] = React.useState(true);
+  const [spinnerloading, setspinnerloading] = React.useState(false);
+
 
 
   const [progress, setProgress] = React.useState(10);
@@ -162,60 +172,58 @@ function App() {
     setOpenDiagram(false);
   }
 
-  const handleCveTable = () =>{
-    setTableDisabled(false);
-  }
-  const handleAssetsTable = () =>{
-    setTableDisabled(true);
-  }
+  const [openCVETable, setOpenCVETable] = React.useState(false);
 
-  const protocolslist =[
-    { label: 'HTTP' },
-    { label: 'HTTPS' },
-    { label: 'ModBus' },
-    { label: 'DNP3' },
-    { label: 'BacNet' },
-  ]
+  const handleClickOpenCVETable = () => {
+    setOpenCVETable(true);
+  };
 
-  const sourcelist =[
-    { label: '127.0.0.1' },
-    { label: '127.0.0.2' },
-    { label: '127.0.0.3' },
-    
-  ]
-  const destlist =[
-    { label: '127.0.0.1' },
-    { label: '127.0.0.2' },
-    { label: '127.0.0.3' },
-    
-  ]
+  const handleCloseCVETable = () => {
+    setOpenCVETable(false);
+  };
+  
+  const handleCVETable = async(e: any) => {
+    handleClickOpenCVETable()
+    console.log(e)
+    // let response = await httpClient.post('//192.168.173.140:5000/cve/'+e);
+  }
+  
 
   const handleFileUpload = async(e: any) => {
     const file = e.target.files[0];
+    setfileLabel(file.name)
+    setspinnerloading(true)
+
     // console.log(file.name)
 
     if (file != null) {
       const data = new FormData();
       data.append('data', file);
-  
-      let response = await httpClient.post('//192.168.173.140:5000/analyze',data
-       
+
+      let response = await httpClient.post('//192.168.173.140:5000/analyze',data       
       );
       
       if (response.status == 200){
         // handleClickAlert()
-        setfileLabel(file.name)
+        setspinnerloading(false)
+
         console.log(response.data)
         console.log(response.data['connections'])
         setVendorPie(response.data['vendor_plots'])
         setProtocolPie(response.data['protocol_plots'])
         setassetData(response.data['connections'])
-
+        setvendorlist(Array.from(new Set((response.data['connections']).map((item: { Vendor: any; }) => item.Vendor))).map(vendor => ({ label: vendor })));
+        setmaclist(Array.from(new Set((response.data['connections']).map((item: { MAC: any; }) => item.MAC))).map(vendor => ({ label: vendor })));
+        setiplist(Array.from(new Set((response.data['connections']).map((item: { IP: any; }) => item.IP))).map(vendor => ({ label: vendor })));
+        setprotocollist(Array.from(new Set((response.data['connections']).map((item: { Protocol: any; }) => item.Protocol))).map(vendor => ({ label: vendor })));
+        handleCloseGraph()
         // setassetData(response.data['connections'])
 
 
       }
       else{
+        setspinnerloading(false)
+
         alert('Error uploading file');
         setfileLabel("")
 
@@ -223,21 +231,13 @@ function App() {
 
 
 
-    // handleClickAlert();
-
  
    
     }
 
   }
 
-  // const assetData = [
-  //   { mac: '5c:88:16:ac:61:a9',vendor:'Rockwell Automation',ipaddr:'172.14.34.22',protocol:'modbus',count:'1'},
-  //   { mac: 'd8:9e:f3:80:0f:8c',vendor:'Dell Inc',ipaddr:'172.14.34.56',protocol:'modbus',count:'1'},
-  //   { mac: 'a4:5f:27:90:5e:94',vendor:'Scnider',ipaddr:'172.14.34.84',protocol:'modbus',count:'1' },
-   
-
-  // ];
+ 
 
   const initialNodes = [
     { id: '1', position: { x: 0, y: 0 }, data: { label: '127.0.0.1' } },
@@ -348,7 +348,8 @@ const svgIcon = (
           <Toolbar />
 
 
-          <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }} >
+          {openGraph == false &&
+           <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }} >
             <Grid container spacing={3}>
 
               <Grid item xs={6} >
@@ -404,7 +405,7 @@ const svgIcon = (
                    Assets
                   </Typography>
                   <Typography component="span" variant='h2' sx={{color: 'black',pt:2,pl:6}}>
-                   5
+                   {assetData.length}
                   </Typography>
                   </Paper>
                 </Grid>
@@ -423,9 +424,10 @@ const svgIcon = (
                   </Typography>
                   <Button
                   component="label"
-                  style={{padding:"0rem",paddingTop:"1rem",height:"3.4rem",marginTop:"1.5rem"}}
+                  style={{padding:"0rem",paddingTop:"0rem",height:"3.4rem",marginTop:"1.5rem"}}
                   size='small'
                   variant="contained"
+                  onClick={handleOpenDiagram}
                 >
                   View
                 </Button>
@@ -457,7 +459,7 @@ const svgIcon = (
                   <Autocomplete
                   disablePortal
                   id="combo-box-demo"
-                  options={protocolslist}
+                  options={vendorlist}
                   sx={{ width: 300 }}
                   renderInput={(params) => <TextField {...params} label="Asset" />}
                 />
@@ -471,7 +473,6 @@ const svgIcon = (
                   variant="contained"
                   
                 >
-                  <input type="file" accept=".pcap" hidden onChange={handleFileUpload} />
                   Search
                 </Button>
                 </Stack>
@@ -501,23 +502,23 @@ const svgIcon = (
                 <Autocomplete
                   disablePortal
                   id="combo-box-demo"
-                  options={protocolslist}
+                  options={maclist}
+                  sx={{ width: 300 }}
+                  renderInput={(params) => <TextField {...params} label="MAC Address" />}
+                />
+                <Autocomplete
+                  disablePortal
+                  id="combo-box-demo"
+                  options={iplist}
+                  sx={{ width: 300 }}
+                  renderInput={(params) => <TextField {...params} label="IP Address" />}
+                />
+                <Autocomplete
+                  disablePortal
+                  id="combo-box-demo"
+                  options={protocollist}
                   sx={{ width: 300 }}
                   renderInput={(params) => <TextField {...params} label="Protocol" />}
-                />
-                <Autocomplete
-                  disablePortal
-                  id="combo-box-demo"
-                  options={sourcelist}
-                  sx={{ width: 300 }}
-                  renderInput={(params) => <TextField {...params} label="Source" />}
-                />
-                <Autocomplete
-                  disablePortal
-                  id="combo-box-demo"
-                  options={destlist}
-                  sx={{ width: 300 }}
-                  renderInput={(params) => <TextField {...params} label="Destination" />}
                 />
                   </Stack>
                   <Stack  
@@ -577,7 +578,9 @@ const svgIcon = (
 
                           <StyledTableCell align="center">
                           
-                          <IconButton color="primary" aria-label="upload picture" component="label">
+                          <IconButton color="primary" aria-label="upload picture" component="label"
+                          onClick={() => handleCVETable(row.MAC)}
+                          >
                         <OpenInNewIcon />
                       </IconButton>
                           </StyledTableCell>
@@ -597,8 +600,76 @@ const svgIcon = (
               
             </Grid>
 
-          </Container>
+          </Container> }
+          <Dialog
+        open={openGraph}
+        onClose={handleCloseGraph}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"PCAP Upload"}
+        </DialogTitle>
+        <DialogContent>
+           <Stack  
+                    direction={'column'}>
+                  
+                    {/* <Typography component="span" variant='h5' sx={{color: 'black'}}>
+                    Asset Identification
+                  </Typography> */}
+              
+                        <Stack  
+                          direction={'row'}
+                          justifyContent="space-evenly"
+                          alignItems="center"
+                          sx={{mt:3}}
+                          spacing={3} >
+                            <Stack  
+                          direction={'row'}
+                          spacing={3}
+                          >
+                            <TextField sx={{mt:0.5}}id="filled-basic" size="small"  label={fileLabel} disabled variant="filled" />
+                            
+                            {/* <Button
+                            component="label"
+                            style={{padding:"0.5rem",paddingTop:"0.5rem",height:"3rem",marginTop:"0.3rem"}}
+                            sx={{color:'black',backgroundColor:'#e6de10',"&:hover": {backgroundColor: "#ccc50e" }}}
+                            // disabled={!analysisdisabled}
 
+                            size='small'
+                            variant="contained"
+                          >
+                            Browse
+
+                          </Button> */}
+                          </Stack>
+                          <Button
+                            component="label"
+                            style={{padding:"0.5rem",paddingTop:"0.5rem",height:"3rem",marginTop:"0.3rem"}}
+                            size='small'
+                            color='success'
+                            variant="contained"
+                            // disabled={analysisdisabled}
+                            // onClick={handleOpenLoading}
+                          >
+                            <input type="file" accept=".pcap" hidden onChange={handleFileUpload} />
+
+                            Analyse
+                          </Button>
+                          {spinnerloading == true &&
+                          <CircularProgress />
+
+                          }
+                          
+                          </Stack>
+                          
+                    </Stack>
+        </DialogContent>
+        <DialogActions>
+          {/* <Button onClick={handleCloseGraph}>Close</Button> */}
+
+        </DialogActions>
+      </Dialog>
 
         </Box>
       </Box>
@@ -636,16 +707,58 @@ const svgIcon = (
         <DialogContent>
           <LinearProgressWithLabel value={progress} />
         </DialogContent>
-        
       </Dialog>
+      
+      <Dialog
+        open={openCVETable}
+        onClose={handleCloseCVETable}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth={true}
+      maxWidth={'xl'}
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"CVE Table"}
+        </DialogTitle>
+        <DialogContent>
+        <Table size="small" sx={{mt:2}} style={{border:"1rem"}}>
+                    <TableHead>
+                      <TableRow>
+                        <StyledTableCell sx={{fontWeight: 'bold'}}>CVE ID</StyledTableCell>
+
+                        <StyledTableCell sx={{fontWeight: 'bold'}} align="center">Description</StyledTableCell>
+
+                    
 
 
+
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {cveData?.map((row:any,index:any) => (
+                        <StyledTableRow key={index}>
+
+                          <StyledTableCell>{row.CVEID}</StyledTableCell>
+                          <StyledTableCell align="center">{row.Description}</StyledTableCell>
+
+
+                        </StyledTableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseCVETable}>Close</Button>
+          
+        </DialogActions>
+      </Dialog>
+      
       <Snackbar open={openAlert} autoHideDuration={5000} onClose={handleCloseAlert} >
         <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }} >
           PCAP File Uploaded!
         </Alert>
       </Snackbar>
-
+    
     </ThemeProvider>
     </>
 
