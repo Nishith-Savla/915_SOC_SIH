@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CVEs for {{ vendor }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" integrity="sha384-HjKb8qi+oMo7JSJz17SkYlC3X9gIcE7/kH70jJQ+eVr5E5BQwVcn5Adt0Y7V71n/" crossorigin="anonymous">
+
+
+
+<!-- superhero theme -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.0.0/dist/superhero/bootstrap.min.css">
+
+
+<!-- Include Font Awesome CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-ZGhjg6wEh5yvJ6UjHK6xsJFm2a9Xm5cO+o/YAyoMdu1QwLjJvH+V7B+cFJxn8g7XJjwwfYs7+ZYpyanJ8kKOow==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+   <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+
+   <style>
+    body {
+      font-family: 'Fira Code', monospace;
+    }
+  </style>
+
+
+
+<style>
+    body {
+        background-color: black;
+        margin: 0;
+        padding: 0;
+    }
+    #particles-js {
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    pointer-events: none;
+  }
+  
+  .sketchy-box {
+    border: 2px dotted #6b6969;
+    border-radius: 45px;
+    padding: 10px;
+    /* display: inline-block; */
+    max-width: 350px;
+  margin: 0 auto;
+    text-align: center;
+    font-size: 30px;
+  }
+  .caligraphical {
+        /* font-family: 'Dancing Script', cursive; */
+        font-family: 'Lobster Two', cursive;
+        font-size: 3em;
+        color: #171717;
+        padding-bottom: 4px;
+        line-height: 1.4;
+
+      }
+
+
+  
+  </style>
+
+</head>
+<body>
+
+    <body class="bg-light" style="font-family: 'Fira Code', monospace; font-size: 1.1em;color: rgb(37, 36, 36);">
+        <div class="container mt-3" >
+          <h1 class="text-center mt-4 caligraphical" style="display: flex;justify-content: center;align-items: center;">Vulnerabilities Reported</h1>
+          <!-- <div id="particles-js"></div> -->
+    <!-- Search bar -->
+    <input type="text" id="searchBar" onkeyup="filterTable()" placeholder="Search CVE descriptions" style="color: black;padding: 10px;align-items: center;font-size: 18px;background-color: transparent;border-radius: 20px;width: 500px;">
+    <p></p>
+
+    {% if cve_list %}
+        <table id="cveTable">
+            <thead>
+                <tr>
+                    <th style="font-size: 25px;"><u style="padding: 5px;">CVE ID</u></th>
+                    <th style="font-size: 25px;padding-left: 10px;"><u style="padding: 5px;">Description</u></th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for cve in cve_list %}
+                    <tr style="border-bottom: 1px solid #ccc;">
+                        <td style="font-size: 20px;padding: 5x;">{{ cve.cve.CVE_data_meta.ID }} </td>
+                        <td style="padding-left: 20px;">{{ cve.cve.description.description_data[0].value }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            
+        </table>
+    {% else %}
+        <p>No CVEs found for {{ vendor }}</p>
+    {% endif %}
+
+
+
+
+    
+    <!-- JavaScript to filter table rows based on search input -->
+    <script>
+        function filterTable() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchBar");
+            filter = input.value
+            table = document.getElementById("cveTable");
+            tr = table.getElementsByTagName("tr");
+                
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[1];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toLowerCase().indexOf(filter.toLowerCase()) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }       
+            }
+        }
+    </script>
+</div>
+
+ 
+</body>
+
+    </html>
