@@ -45,28 +45,5 @@
                           
                           
                           </Stack>
-                          <Stack  
-                          direction={'row'}
-                          justifyContent="space-evenly"
-                          alignItems="center"
-                          sx={{mt:3}}
-                          spacing={4} >
-                            
-                           
-
-
-                          <Button
-                            component="label"
-                            style={{padding:"0.5rem",paddingTop:"0.5rem",height:"3rem",marginTop:"0.3rem"}}
-                            size='small'
-                            variant="contained"
-                            onClick={handleOpenDiagram}
-
-                          >
-                            Network Diagram
-                          </Button>
-
                           
-                          
-                          </Stack>
                     </Stack> */}
