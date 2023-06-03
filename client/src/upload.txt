@@ -1,0 +1,72 @@
+ {/* <Stack  
+                    direction={'column'}>
+                  
+                    <Typography component="span" variant='h5' sx={{color: 'black'}}>
+                    Asset Identification
+                  </Typography>
+              
+                        <Stack  
+                          direction={'row'}
+                          justifyContent="space-evenly"
+                          alignItems="center"
+                          sx={{mt:3}}
+                          spacing={3} >
+                            <Stack  
+                          direction={'row'}
+                          spacing={3}
+                          >
+                            <TextField sx={{mt:0.5}}id="filled-basic" size="small"  label={fileLabel} disabled variant="filled" />
+                            
+                            <Button
+                            component="label"
+                            style={{padding:"0.5rem",paddingTop:"0.5rem",height:"3rem",marginTop:"0.3rem"}}
+                            sx={{color:'black',backgroundColor:'#e6de10',"&:hover": {backgroundColor: "#ccc50e" }}}
+                            // disabled={!analysisdisabled}
+
+                            size='small'
+                            variant="contained"
+                          >
+                            Browse
+                            <input type="file" accept=".pcap" hidden onChange={handleFileUpload} />
+
+                          </Button>
+                          </Stack>
+                          <Button
+                            component="label"
+                            style={{padding:"0.5rem",paddingTop:"0.5rem",height:"3rem",marginTop:"0.3rem"}}
+                            size='small'
+                            color='success'
+                            variant="contained"
+                            // disabled={analysisdisabled}
+                            onClick={handleOpenLoading}
+                          >
+                            Analyse
+                          </Button>
+                          
+                          
+                          </Stack>
+                          <Stack  
+                          direction={'row'}
+                          justifyContent="space-evenly"
+                          alignItems="center"
+                          sx={{mt:3}}
+                          spacing={4} >
+                            
+                           
+
+
+                          <Button
+                            component="label"
+                            style={{padding:"0.5rem",paddingTop:"0.5rem",height:"3rem",marginTop:"0.3rem"}}
+                            size='small'
+                            variant="contained"
+                            onClick={handleOpenDiagram}
+
+                          >
+                            Network Diagram
+                          </Button>
+
+                          
+                          
+                          </Stack>
+                    </Stack> */}
