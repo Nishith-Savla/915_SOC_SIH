@@ -30,7 +30,9 @@ export default function SignIn({innerRef,stateChanger, ...rest}: any) {
     {
 
       // }
+      // navigate("/start");
       navigate("/dashboard");
+
     }
     else{
       navigate("/");
