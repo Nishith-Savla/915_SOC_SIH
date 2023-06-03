@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OT Protocol Connections</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Add the theme styles -->
+  <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/cyborg/bootstrap.min.css"> -->
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.0.0/dist/superhero/bootstrap.min.css"> -->
+
+
+
+<!-- CHANGES!!! -->
+
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" integrity="sha384-HjKb8qi+oMo7JSJz17SkYlC3X9gIcE7/kH70jJQ+eVr5E5BQwVcn5Adt0Y7V71n/" crossorigin="anonymous">
+
+
+<!-- superhero theme -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.0.0/dist/superhero/bootstrap.min.css">
+
+
+<!-- Include Font Awesome CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-ZGhjg6wEh5yvJ6UjHK6xsJFm2a9Xm5cO+o/YAyoMdu1QwLjJvH+V7B+cFJxn8g7XJjwwfYs7+ZYpyanJ8kKOow==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+   <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Fira Code', monospace;
+    }
+  </style>
+
+
+
+<!-- PARTICLES -->
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+
+<style>
+  body {
+      background-color: black;
+      margin: 0;
+      padding: 0;
+  }
+  #particles-js {
+  height: 100vh;
+  width: 100vw;
+  position: absolute;
+  pointer-events: none;
+}
+
+.sketchy-box {
+  border: 2px dotted #6b6969;
+  border-radius: 45px;
+  padding: 10px;
+  /* display: inline-block; */
+  max-width: 350px;
+margin: 0 auto;
+  text-align: center;
+  font-size: 30px;
+}
+
+
+
+
+</style>
+
+<!-- <style>
+  /* Change table background color */
+  .table {
+    background-color:  #708090;
+  }
+
+  /* Change table row colors */
+  .table-striped tbody tr:nth-of-type(odd) {
+    background-color:  #585b5e;
+    color: #333333;
+  }
+
+  .table-striped tbody tr:nth-of-type(even) {
+    background-color:  #7a7979;
+    color: #333333;
+  }
+
+  /* Change table row hover color */
+  .table-hover tbody tr:hover {
+    background-color: #eca8a8;
+  }
+</style> -->
+
+<!-- glassy-table -->
+<style>
+.glassy-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.glassy-table th,
+.glassy-table td {
+  padding: 8px;
+  text-align: left;
+}
+
+.glassy-table th {
+  background-color: #8C3BFF;
+  color: #FFFFFF;
+}
+
+.glassy-table tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.glassy-table tr:hover {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.glassy-table td::selection,
+.glassy-table th::selection {
+  background-color: #8C3BFF;
+  color: #FFFFFF;
+}
+
+.glassy-table td::-moz-selection,
+.glassy-table th::-moz-selection {
+  background-color: #8C3BFF;
+  color: #FFFFFF;
+}
+
+
+</style>
+
+
+</head>
+<!-- <body style="font-family: 'Fira Code', monospace; font-size: 1.4em;color: rgb(37, 36, 36);"> -->
+  <body class="bg-light" style="font-family: 'Fira Code', monospace; font-size: 1.1em;color: rgb(37, 36, 36);">
+  <div class="container mt-3">
+    <h1 class="text-center mt-4" style="padding-top: 40px;">OT Protocol Connections</h1>
+    <h4 class="text-center mt-4" style="padding-top: 40px;">PCAP file: {{ pcap_name}}</p>
+
+
+<!-- jquery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+ <!-- PARTICLE -->
+ <div id="particles-js"></div>
+
+    <!-- PLOT -->
+    <div class="text-center mb-5">
+      {{ plot_html|safe }}
+    </div>
+
+
+<!-- UNIQUE TABLE -->
+
+<h2 class="text-center mb-4 sketchy-box" style="text-align: center;">Unique Assets : {{len_vendors}}</h2>
+<div class="table-responsive mb-5">
+  <table class="table glassy-table" style="color: black;padding: 10px;align-items: center;font-size: 18px;">
+    <thead class="thead-light"  style="color: black;">
+<!-- <h1>Unique Assets : {{len_vendors}}</h1> -->
+<!-- <table class="table glassy-table" style="color: black;padding: 10px;align-items: center;font-size: 18px;">
+  <thead class="thead-light"  style="color: black;"> -->
+            <tr>
+                <th>Vendor Name</th>
+                <th>IP Addresses</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vendor in unique_vendors %}
+            <tr>
+                <td>{{ vendor.vendor_name }}</td>
+                <td>
+                    
+                        {% for ip_address in vendor.ip_addresses %}
+                    {{ ip_address }}
+                        {% endfor %}
+                    
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+<br>
+<!-- PREDICTED -->
+<!-- <div class="table-responsive mb-5">
+  <table class="table glassy-table" style="color: black;padding: 10px;align-items: center;font-size: 18px;">
+    <thead class="thead-light"  style="color: black;">
+<th>
+  Predicted OS 
+</th>
+  </thead>
+  <tbody>
+    {% for item in predicted_devices %}
+    <tr>
+        <td>{{ item }}</td>
+      </tr>
+      {% endfor %}
+  </tbody>
+</table>
+
+
+</div>
+ -->
+
+
+<!-- ARP Table -->
+    <!-- <h2 class="text-center mb-4 sketchy-box" style="text-align: center;">ARP-Table</h2> -->
+    <!-- <div class="table-responsive mb-5"> -->
+
+        <!-- <table class="table table-bordered "  style="color: black;"> -->
+          <!-- <table class="table table-striped"  style="color: black;padding: 10px;align-items: center;font-size: 18px;" > -->
+
+
+
+
+            <!-- <table class="table glassy-table" style="color: black;padding: 10px;align-items: center;font-size: 18px;"> -->
+        <!-- <thead class="thead-light"  style="color: black;"> -->
+          <!-- <tr>
+            <th>IP Address</th>
+            <th>MAC Address</th>
+            <th>Vendor</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ip, data in arp_table.items() %}
+            <tr>
+              <td>{{ ip }}</td>
+              <td>{{ data[0] }}</td>
+              <td>{{ data[1] }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div> -->
+
+    <form class="form-inline mb-5">
+      <label class="mr-2" for="search_filter"></label>
+      <input type="text" class="form-control" id="search_filter" onkeyup="filterTable()" placeholder="Search by vendor name, MAC address, IP address, OS, or protocol.." style="color: black; padding: 10px; align-items: center; font-size: 18px; background-color: transparent; border-radius: 20px; width: 710px;">
+
+    </form>
+
+</div>
+
+
+
+
+
+
+    <div class="container" id="particles-js" style="max-width: 100%;">
+
+      <!-- <table class="table table-striped" style="color: black;padding: 10px;align-items: center;font-size: 18px;" id="connection_table"> -->
+        <table class="table glassy-table" style="color: black;padding: 10px;align-items: center;font-size: 18px;" id="connection_table">
+        <thead class="thead-light">
+
+          <tr >
+            <th>Sr. No</th>
+            <th>Source IP</th>
+            <th>Source MAC</th>
+            <th>Source Vendor</th>
+            <th>Destination IP</th>
+            <th>Destination MAC</th>
+            <th>Destination Vendor</th>
+            <th>Protocol</th>
+            <th>TTL</th>
+            <th>Window Size</th>
+            <th>Operating System</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for connection in connections %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ connection['src_ip'] }}</td>
+              <td>{{ connection['src_mac'] }}</td>
+              <td>{{ connection['src_vendor'] }}</td>
+              <td>{{ connection['dst_ip'] }}</td>
+              <td>{{ connection['dst_mac'] }}</td>
+              <td>{{ connection['dst_vendor'] }}</td>
+              <td>{{ connection['protocol'] }}</td>
+              <td>{{ connection['ttl'] }}</td>
+              <td>{{ connection['window_size'] }}</td>
+              <td>{{ connection['os_name'] }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      
+      <script>
+        $(document).ready(function() {
+          var rows = $('#connection_table tbody tr');
+          var mergedRows = [];
+      
+          rows.each(function() {
+            var row = $(this);
+            var srcIP = row.find('td:nth-child(2)').text();
+            var dstIP = row.find('td:nth-child(5)').text();
+            var srcMAC = row.find('td:nth-child(3)').text();
+            var dstMAC = row.find('td:nth-child(6)').text();
+            var ttl = row.find('td:nth-child(9)').text();
+            var windowSize = row.find('td:nth-child(10)').text();
+            var os = row.find('td:nth-child(11)').text();
+            var protocol = row.find('td:nth-child(8)').text();
+            var srcVendor = row.find('td:nth-child(4)').text();
+            var dstVendor = row.find('td:nth-child(7)').text();
+      
+            var existingRow = mergedRows.find(function(element) {
+              return (
+                element.srcIP === srcIP &&
+                element.dstIP === dstIP &&
+                element.srcMAC === srcMAC &&
+                element.dstMAC === dstMAC &&
+                element.ttl === ttl &&
+                element.windowSize === windowSize &&
+                element.os === os
+              );
+            });
+      
+            if (existingRow) {
+              // Check if protocol already exists
+              if (!existingRow.protocol.includes(protocol)) {
+                existingRow.protocol.push(protocol);
+              }
+            } else {
+              mergedRows.push({
+                srcIP: srcIP,
+                dstIP: dstIP,
+                srcMAC: srcMAC,
+                dstMAC: dstMAC,
+                ttl: ttl,
+                windowSize: windowSize,
+                os: os,
+                protocol: [protocol],
+                srcVendor: srcVendor,
+                dstVendor: dstVendor
+              });
+            }
+          });
+      
+          $('#connection_table tbody').empty();
+      
+          mergedRows.forEach(function(row, index) {
+            var protocols = row.protocol.join(', ');
+            var newRow = $('<tr>' +
+              '<td>' + (index + 1) + '</td>' +
+              '<td>' + row.srcIP + '</td>' +
+              '<td>' + row.srcMAC + '</td>' +
+              '<td>' + row.srcVendor + '</td>' +
+              '<td>' + row.dstIP + '</td>' +
+              '<td>' + row.dstMAC + '</td>' +
+              '<td>' + row.dstVendor + '</td>' +
+              '<td>' + protocols + '</td>' +
+              '<td>' + row.ttl + '</td>' +
+              '<td>' + row.windowSize + '</td>' +
+              '<td>' + row.os + '</td>' +
+              '</tr>');
+      
+            $('#connection_table tbody').append(newRow);
+          });
+        });
+      </script>
+      
+      
+      
+      </div>
+      <script>
+      function filterTable() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("search_filter");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("connection_table");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+          td_vendor = tr[i].getElementsByTagName("td")[2];
+          td_mac = tr[i].getElementsByTagName("td")[1];
+          td_ip = tr[i].getElementsByTagName("td")[3];
+          td_protocol = tr[i].getElementsByTagName("td")[7];
+          td_os = tr[i].getElementsByTagName("td")[10];
+          if (td_vendor || td_mac || td_ip || td_protocol) {
+            vendor_value = td_vendor.textContent || td_vendor.innerText;
+            mac_value = td_mac.textContent || td_mac.innerText;
+            ip_value = td_ip.textContent || td_ip.innerText;
+            protocol_value = td_protocol.textContent || td_protocol.innerText;
+            os_value = td_os.textContent || td_os.innerText;
+            if (vendor_value.toUpperCase().indexOf(filter) > -1 || 
+                mac_value.toUpperCase().indexOf(filter) > -1 ||
+                ip_value.toUpperCase().indexOf(filter) > -1 ||
+                protocol_value.toUpperCase().indexOf(filter) > -1 || os_value.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }       
+        }
+      }
+      </script>
+    <!-- particle.js -->
+
+<script>
+  particlesJS("particles-js", {
+      "particles": {
+          "number": {
+              "value": 100,
+              "density": {
+                  "enable": true,
+                  "value_area": 800
+              }
+          },
+          "color": {
+              "value": "#ffffff"
+          },
+          "shape": {
+              "type": "circle",
+              "stroke": {
+                  "width": 0,
+                  "color": "#000000"
+              },
+              "polygon": {
+                  "nb_sides": 5
+              },
+              "image": {
+                  "src": "img/github.svg",
+                  "width": 100,
+                  "height": 100
+              }
+          },
+          "opacity": {
+              "value": 0.6,
+              "random": false,
+              "anim": {
+                  "enable": false,
+                  "speed": 1,
+                  "opacity_min": 0.1,
+                  "sync": false
+              }
+          },
+          "size": {
+              "value": 3,
+              "random": true,
+              "anim": {
+                  "enable": false,
+                  "speed": 40,
+                  "size_min": 0.1,
+                  "sync": false
+              }
+          },
+          "line_linked": {
+              "enable": true,
+              "distance": 150,
+              "color": "#ffffff",
+              "opacity": 0.4,
+              "width": 1
+          },
+          "move": {
+              "enable": true,
+              "speed": 6.5,
+              "direction": "none",
+              "random": false,
+              "straight": false,
+              "out_mode": "out",
+              "bounce": false,
+              "attract": {
+                  "enable": false,
+                  "rotateX": 600,
+                  "rotateY": 1200
+              }
+          }
+      },
+      "interactivity": {
+          "detect_on": "canvas",
+          "events": {
+              "onhover": {
+                  "enable": true,
+                  "mode": "repulse"
+              },
+              "onclick": {
+                  "enable": true,
+                  "mode": "push"
+              },
+              "resize": true
+          },
+          "modes": {
+              "grab": {
+                  "distance": 400,
+                  "line_linked": {
+                      "opacity": 1
+                  }
+              },
+              "bubble": {
+                  "distance": 400,
+                  "size": 40,
+                  "duration": 2,
+                  "opacity": 8,
+                  "speed": 3
+              },
+              "repulse": {
+                  "distance": 200,
+                  "duration": 0.4
+              },
+              "push": {
+                  "particles_nb": 4
+              },
+              "remove": {
+                  "particles_nb": 2
+              }
+          }
+      },
+      "retina_detect": true
+  });
+</script>
+
+    </div>
+  </body>
+</html>
