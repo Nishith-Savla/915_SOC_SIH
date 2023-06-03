@@ -3,3 +3,6 @@ backend/__pycache__/*
 backend/pcap/*
 backend/uploads/*
 client/node_modules
+.ipynb_checkpoints/
+Testing.ipynb
+sample_df
