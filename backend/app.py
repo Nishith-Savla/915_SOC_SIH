@@ -12,6 +12,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 import html
 import json
+from flask_cors import CORS
+
 
 # ML
 import xml.etree.ElementTree as ET
@@ -26,12 +28,13 @@ from helper import *
 app = Flask(__name__)
 mac_parser = manuf.MacParser()
 app.config['UPLOAD_FOLDER'] = 'uploads'
+CORS(app, supports_credentials=True)
 
 # Define the analyze endpoint
 @app.route('/analyze', methods=['POST'])
 def analyze():
     # Get the uploaded file from the request object
-    pcap_file = request.files['pcap-file']
+    pcap_file = request.files['data']
     # Save the uploaded file to disk in the UPLOAD_FOLDER directory
     filename = secure_filename(pcap_file.filename)
     pcap_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -60,7 +63,7 @@ def analyze():
     }
 
     print(return_obj)
-    input("Wait:10")
+    # input("Wait:10")
     return jsonify(return_obj)
 
 
