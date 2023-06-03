@@ -57,7 +57,7 @@ def analyze():
     # print("==>",len_vendors)
 
     return_obj = {
-        'connections': json.dumps(connections),
+        'connections': connections,
         'protocol_plots': protocol_counts,
         'vendor_plots': vendor_plots,
         'predicted_devices': list(predicted_device)
@@ -195,7 +195,7 @@ def graph():
         "os_name": os_name,
         "os_image": os_image
     }
-    return render_template("network.html", graph_data=graph_data, pcap_name=pcap_name)
+    return graph_data
 
 # tcpdump
 @app.route('/start_capture', methods=['POST'])
@@ -214,11 +214,12 @@ def stop_capture():
     return jsonify({'message': 'Capture stopped.'})
 
 
-@app.route('/cve/<vendor>')
-def cve(vendor):
+@app.route('/cve/<mac>')
+def cve(mac):
+    vendor = mac_parser.get_manuf(mac)
     pages = request.args.get('pages', default='50', type=int)
     cve_list = lookup_cve(vendor, pages)
-    return render_template('cve.html', vendor=vendor, cve_list=cve_list)
+    return cve_list
 
 if __name__ == '__main__':
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
