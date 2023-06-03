@@ -36,8 +36,8 @@ def analyze():
     filename = secure_filename(pcap_file.filename)
     pcap_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     pcap_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    arp_table = get_arp_table(pcap_path)
-    print(arp_table)
+    # arp_table = get_arp_table(pcap_path)
+    # print(arp_table)
 
     predicted_device=set()
     

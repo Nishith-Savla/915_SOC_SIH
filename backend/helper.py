@@ -105,28 +105,19 @@ def lookup_cve(vendor, pages):
 
 def process_pcap(filename, predicted_device):
     # Read the pcap file
+    # TODO: Check the format for pyshark.FileCapture.
     cap = pyshark.FileCapture(filename)
     protocol__count = {}
     model = loadData("AssetIdentification.pickle")
-
     ## ARP ADD
-
     # Get the ARP table
     arp_table = get_arp_table(filename)
 
-    # Graph
-    # Create a dictionary to store the nodes
-    nodes = {}
-
-    # Create a list to store the links
-    links = []
-
-    # All protocols
-    all_protocols=set()
-    incount=0
-    outcount=0
+    
     # Create a manuf object to resolve MAC addresses to vendor names
     mac_vendor_resolver = manuf.MacParser()
+
+    # TODO: Check the format of the cap file to optimize the processing
 
     # Draw the plot
     for pkt in cap:
@@ -139,35 +130,6 @@ def process_pcap(filename, predicted_device):
     values = list(protocol__count.values())
 
     protocol_counts = dict(zip(labels, values))
-
-    # Define custom colors for the pie chart
-    colors = ['#FFC300', '#FF5733', '#C70039', '#900C3F', '#581845', '#1F271B']
-
-    # Create a pie chart using plotly
-    fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
-    fig.update_layout(
-    title='Protocol Count',
-    title_x=0.05,
-    title_y=0.99,  # Adjust this parameter to move the title up
-    width=1000,
-    height=800,
-    font=dict(size=24, family='Arial, sans-serif'),
-    margin=dict(l=10, r=50, b=50, t=100),
-    paper_bgcolor='rgba(0,0,0,0)',
-    plot_bgcolor='rgba(0,0,0,0)',
-    legend=dict(
-        orientation='h',
-        y=1.02,
-        xanchor='right',
-        x=1
-    ),)
-    fig.update_traces(
-    textposition='inside',
-    textinfo='label+percent',
-    marker=dict(colors=colors, line=dict(color='#FFFFFF', width=2)))
-
-    # Convert the plotly figure to HTML format
-    plot_html = fig.to_html(full_html=False)
 
     # Create a dictionary to store the MAC addresses and vendor names
     mac_vendor_dict = {}
@@ -289,7 +251,6 @@ def process_pcap(filename, predicted_device):
     # Convert the list of connections to a pandas dataframe
 
     df = pd.DataFrame(connections)
-    plot_html=plot_html
     # Return the connection information
     return protocol_counts, df.to_dict('records'), vendor_plots
 
