@@ -19,6 +19,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 import sys 
+import pickle
 
 
 
@@ -106,6 +107,7 @@ def process_pcap(filename, predicted_device):
     # Read the pcap file
     cap = pyshark.FileCapture(filename)
     protocol__count = {}
+    model = loadData("AssetIdentification.pickle")
 
     ## ARP ADD
 
@@ -135,6 +137,8 @@ def process_pcap(filename, predicted_device):
     # Create a list of protocol_ names and counts
     labels = list(protocol__count.keys())
     values = list(protocol__count.values())
+
+    protocol_counts = dict(zip(labels, values))
 
     # Define custom colors for the pie chart
     colors = ['#FFC300', '#FF5733', '#C70039', '#900C3F', '#581845', '#1F271B']
@@ -218,7 +222,7 @@ def process_pcap(filename, predicted_device):
                 # Get the TTL and Window Size values
                 ttl = int(packet.ip.ttl)
                 window_size = int(packet.tcp.window_size)
-                
+ 
                 os_name, os_image = get_os_details(ttl, window_size) 
                
                 for layer in layers:
@@ -268,6 +272,13 @@ def process_pcap(filename, predicted_device):
     # Get the unique assets
     # Convert the vendor map to a list for rendering in the template
     unique_vendors = list(vendor_map.values())
+    vendor_plots = dict()
+    for i in vendor_map.keys():
+        name = vendor_map[i]['vendor_name']
+        if not name:
+            name = "Unknown"
+        vendor_plots[name] = len(vendor_map[i]['ip_addresses'])
+               
     
     # PACKET ML
     packets_ = rdpcap(filename)
@@ -280,7 +291,7 @@ def process_pcap(filename, predicted_device):
     df = pd.DataFrame(connections)
     plot_html=plot_html
     # Return the connection information
-    return incount, outcount, df.to_dict('records'), plot_html,unique_vendors,len(unique_vendors)
+    return protocol_counts, df.to_dict('records'), vendor_plots
 
 
 # def extract_tcp_signature(packet):
