@@ -21,7 +21,13 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 import sys 
 import pickle
+import logging
+logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
+                    level=logging.INFO,
+                    datefmt='%Y-%m-%d %H:%M:%S')
 
+ot_list = pd.read_csv('ot_names.csv')
+ot_company_names = ot_list.processed_names.tolist()
 
 
 def storeData(model, filename):
@@ -31,12 +37,22 @@ def storeData(model, filename):
     pickle.dump(model, dbfile)                     
     dbfile.close()
 
+
 def loadData(filename):
     # for reading also binary mode is important
     dbfile = open(filename, 'rb')     
     db = pickle.load(dbfile)
     dbfile.close()
     return db
+
+def isOT(name):
+    device_type = 'IT'
+    name = name.split(" ")[0].lower()
+    for company_name in ot_company_names:
+        if name in company_name:
+            device_type = 'OT'
+            return device_type
+    return device_type
 
 def extract_tcp_signature(packet, predicted_device, model, vectorizer):
     tcp = packet[TCP]
@@ -107,15 +123,19 @@ def lookup_cve(vendor, pages):
 def process_pcap(filename, predicted_device):
     # Read the pcap file
     # TODO: Check the format for pyshark.FileCapture.
+    logging.info("Reading PCAP using file shark")
     cap = pyshark.FileCapture(filename)
+    logging.info("PCAP Read using file shark")
+    # Filter out only TCP Layer
     protocol__count = {}
     data = loadData("AssetIdentification1.pickle")
-    print(data)
     model = data['model']
     vectorizer = data['vectorizer']
     ## ARP ADD
     # Get the ARP table
+    logging.info("Getting ARP Table")
     arp_table = get_arp_table(filename)
+    logging.info("ARP Table received")
 
     
     # Create a manuf object to resolve MAC addresses to vendor names
@@ -123,12 +143,12 @@ def process_pcap(filename, predicted_device):
 
     # TODO: Check the format of the cap file to optimize the processing
 
+    logging.info("Getting packet count based on protcol")
     # Draw the plot
     for pkt in cap:
         for layer in pkt.layers:
             protocol_ = layer.layer_name
             protocol__count[protocol_] = protocol__count.get(protocol_, 0) + 1
-
     # Create a list of protocol_ names and counts
     labels = list(protocol__count.keys())
     values = list(protocol__count.values())
@@ -140,10 +160,13 @@ def process_pcap(filename, predicted_device):
             name = "Unknown"
         protocol_plots.append([name, protocol__count[i]])
 
+
     protocol_counts = zip(labels, values)
     print(protocol_counts)
     protocol_counts = dict(protocol_counts)
+    logging.info("Protocol dict obtained")
 
+    
     # Create a dictionary to store the MAC addresses and vendor names
     mac_vendor_dict = {}
 
@@ -154,6 +177,7 @@ def process_pcap(filename, predicted_device):
     all_protocols = []
     outcount = 0
     incount = 0
+    logging.info("Analyzing the packets for Getting the table data")
     # Iterate over each packet in the pcap file
     for packet in cap:
         protocol="Unknown"       
@@ -172,12 +196,15 @@ def process_pcap(filename, predicted_device):
                     # Get the vendor name for the source MAC address
                     # vendor = mac_vendor_resolver.get_manuf(src_mac)
                     vendor = mac_vendor_resolver.get_manuf_long(src_mac)
+                    vendor_classification = mac_vendor_resolver.get_manuf_long(src_mac).strip()[0]
+                    print(vendor_classification)
                     mac_vendor_dict[src_mac] = vendor
 
                 if dst_mac not in mac_vendor_dict:
                     # Get the vendor name for the destination MAC address
                     # vendor = mac_vendor_resolver.get_manuf(dst_mac)
                     vendor = mac_vendor_resolver.get_manuf_long(dst_mac)
+                    vendor_classification = mac_vendor_resolver.get_manuf_long(dst_mac).strip()[0]
                     mac_vendor_dict[dst_mac] = vendor
 
             # Check if the packet has an IP layer
@@ -227,25 +254,24 @@ def process_pcap(filename, predicted_device):
         except Exception as e:
             print(f"Error processing packet: {e}")
             pass
+    logging.info("Packet Analysis completed")
 
 
+    logging.info("Preparing vendor data")
     # Iterate over each ARP table entry
     for ip_address, arp_entry in arp_table.items():
         mac_address, vendor = arp_entry
     # Check if the MAC address is already in the dictionary
-    try:
-        if mac_address not in vendor_map:
-            vendor_map[mac_address] = {
-                'vendor_name': vendor,
-                'ip_addresses': set([ip_address])  # Store unique IP addresses in a set
-            }
-    except:
-        pass
-    else:
-        # Add the IP address to the existing MAC address entry
-        print(type(vendor_map[mac_address]['ip_addresses']))
         try:
-            vendor_map[mac_address]['ip_addresses'].add(ip_address)
+            if mac_address not in vendor_map:
+                vendor_map[mac_address] = {
+                    'vendor_name': vendor,
+                    'ip_addresses': set([ip_address])  # Store unique IP addresses in a set
+                }
+            else:
+                # Add the IP address to the existing MAC address entry
+                print(type(vendor_map[mac_address]['ip_addresses']))
+                vendor_map[mac_address]['ip_addresses'].add(ip_address)
         except:
             pass
 
@@ -259,16 +285,20 @@ def process_pcap(filename, predicted_device):
         if not name:
             name = "Unknown"
         vendor_plots.append([name, len(vendor_map[i]['ip_addresses'])])
-               
+    
+    logging.info("Vendor data prepared")
+
+    logging.info("Device Identification Starts")
     
     # PACKET ML
     packets_ = rdpcap(filename)
-    for packet in packets_:
-        if TCP in packet:
-            extract_tcp_signature(packet,predicted_device, model, vectorizer)
+    for packet in packets_[TCP]:
+        extract_tcp_signature(packet,predicted_device, model, vectorizer)
     print(predicted_device)
+    logging.info("Device Identification Ends")
     # Convert the list of connections to a pandas dataframe
-
+    
+    logging.info("Connection data preparation")
     # processing connections for the table
     df = pd.DataFrame(connections)
     source_list = list(df[['src_mac', 'src_vendor','src_ip', 'protocol']].values)
@@ -279,7 +309,10 @@ def process_pcap(filename, predicted_device):
     combined_df.columns = columns
     combined_df.drop_duplicates(inplace=True)
     combined_df = combined_df.groupby(['MAC', 'Vendor', 'IP'])['Protocol'].apply(','.join).reset_index()
+    combined_df['device_type'] = combined_df.Vendor.apply(isOT)
+
     combined_df.to_dict('records')
+    logging.info("Connection data ends")
     # Return the connection information
     return protocol_plots, combined_df.to_dict('records'), vendor_plots
 
