@@ -22,9 +22,6 @@ import sys
 
 from helper import *
 
-
-
-
 app = Flask(__name__)
 mac_parser = manuf.MacParser()
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -34,7 +31,7 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 def analyze():
     # Get the uploaded file from the request object
     pcap_file = request.files['pcap-file']
-        # Save the uploaded file to disk in the UPLOAD_FOLDER directory
+    # Save the uploaded file to disk in the UPLOAD_FOLDER directory
     filename = secure_filename(pcap_file.filename)
     pcap_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     pcap_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -85,8 +82,7 @@ def graph():
     vendor_found = False
     for packet in capture:
         try:
-            layers = list(packet.layers)
-            
+            layers = list(packet.layers)            
             # Check if the packet has an Ethernet layer
             if 'ETH Layer' in str(packet.layers):
                 # Get the source and destination MAC addresses
@@ -171,24 +167,19 @@ def graph():
         
         }
         for node in nodes
-    ]
-       
-
+    ]      
     # edges_data = [{"from": src, "to": dst, "label": edge_data["label"]} for src, dst_data in edges.items() for dst, edge_data in dst_data.items()]
     edges_data = [
         {"from": src, "to": dst, "label": ", ".join(edge_data["label"])}
         for src, dst_data in edges.items()
         for dst, edge_data in dst_data.items()
     ]
-
-
     graph_data = {
         "nodes": nodes_data,
         "edges": edges_data,
         "os_name": os_name,
         "os_image": os_image
     }
-
     return render_template("network.html", graph_data=graph_data, pcap_name=pcap_name)
 
 # tcpdump
@@ -213,10 +204,6 @@ def cve(vendor):
     pages = request.args.get('pages', default='50', type=int)
     cve_list = lookup_cve(vendor, pages)
     return render_template('cve.html', vendor=vendor, cve_list=cve_list)
-
-
-
-
 
 if __name__ == '__main__':
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
