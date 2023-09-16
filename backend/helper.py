@@ -1,27 +1,27 @@
-from flask import Flask, render_template, request, jsonify
-from scapy.all import *
-from manuf import manuf
-from werkzeug.utils import secure_filename
-import pyshark
-import netifaces
-import pandas as pd
+import html
+import logging
 import os
+import pickle
+import sys
 import time
-import requests
+
+import xml.etree.ElementTree as ET
+
+import netifaces
+import numpy as np
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import html
-import numpy as np
-
-# ML
-import xml.etree.ElementTree as ET
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import CountVectorizer
+import pyshark
+import requests
+from flask import Flask, render_template, request, jsonify
+from manuf import manuf
+from scapy.all import *
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import accuracy_score
-import sys
-import pickle
-import logging
+from sklearn.model_selection import train_test_split
+from werkzeug.utils import secure_filename
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
                     level=logging.INFO,
