@@ -33,5 +33,5 @@ termcolor==1.1.0
 threadpoolctl==3.1.0
 typing_extensions==4.1.1
 urllib3==1.26.16
-Werkzeug==2.0.3
+Werkzeug==2.2.3
 zipp==3.6.0

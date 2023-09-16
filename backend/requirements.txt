@@ -7,5 +7,5 @@ pyshark==0.6
 requests==2.31.0
 scapy==2.5.0
 scikit-learn==1.2.2
-werkzeug~=2.3.7
+werkzeug~=2.2.3
 numpy~=1.25.2
