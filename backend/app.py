@@ -1,22 +1,10 @@
-from flask import Flask, render_template, request, jsonify
-from scapy.all import *
-from manuf import manuf
-from werkzeug.utils import secure_filename
-import pyshark
-import netifaces
-import pandas as pd
-import os
-import time
-import requests
-import plotly.express as px
-import plotly.graph_objects as go
 import html
 import json
-from flask_cors import CORS
-from pathlib import Path
+import os
+import time
 
-# ML
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 import netifaces
 import pandas as pd
@@ -25,6 +13,7 @@ import plotly.graph_objects as go
 import pyshark
 import requests
 from flask import Flask, jsonify, render_template, request
+from flask_cors import CORS
 from flask_cors import CORS, cross_origin
 from manuf import manuf
 from scapy.all import *

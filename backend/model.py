@@ -1,29 +1,28 @@
-from flask import Flask, render_template, request, jsonify
-from scapy.all import *
-from manuf import manuf
-from werkzeug.utils import secure_filename
-import pyshark
-import netifaces
-import pandas as pd
-import os
-import time
-import requests
-import plotly.express as px 
-import plotly.graph_objects as go
 import html
+import os
+import pickle
+import sys
+import time
+
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
-# ML
-import xml.etree.ElementTree as ET
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import CountVectorizer
+import netifaces
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+import pyshark
+import requests
+from flask import Flask, render_template, request, jsonify
+from manuf import manuf
+from scapy.all import *
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import accuracy_score
-import sys 
-import pickle
-  
-from helper import *
+from sklearn.model_selection import train_test_split
+from werkzeug.utils import secure_filename
 
+from helper import *
 
 # ML
 dataset_path = Path(__file__).absolute().parent / "datasets/dataset.xml"
