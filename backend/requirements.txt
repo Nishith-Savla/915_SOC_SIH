@@ -8,4 +8,4 @@ requests==2.31.0
 scapy==2.5.0
 scikit-learn==1.2.2
 werkzeug~=2.3.7
-numpy~=1.25.2
+numpy~=1.22.0
