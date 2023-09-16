@@ -11,6 +11,7 @@ import requests
 import plotly.express as px 
 import plotly.graph_objects as go
 import html
+from pathlib import Path
 
 # ML
 import xml.etree.ElementTree as ET
@@ -25,7 +26,7 @@ from helper import *
 
 
 # ML
-dataset_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'datasets', 'dataset.xml')
+dataset_path = Path(__file__).absolute().parent / "datasets/dataset.xml"
 
 # Step 1: Data Preparation
 tree = ET.parse(dataset_path)
@@ -35,7 +36,7 @@ data = []
 labels = []
 
 # Predicted device
-predicted_device=set()
+predicted_device = set()
 
 for fingerprint in root.findall('fingerprints/fingerprint'):
     fingerprint_name = fingerprint.get('name')
@@ -65,4 +66,4 @@ data = {
     'model': model,
     'vectorizer': vectorizer
 }
-storeData(data,"AssetIdentification1.pickle")
+store_data(data, "AssetIdentification.pickle")

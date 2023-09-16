@@ -1,4 +1,9 @@
-venv
+**/.venv/
+**/venv/
+
+**/.vscode/
+**/.idea/
+
 backend/__pycache__/*
 backend/pcap/*
 backend/uploads/*
