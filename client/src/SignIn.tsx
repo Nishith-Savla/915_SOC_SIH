@@ -13,7 +13,12 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {Link, useNavigate} from "react-router-dom";
 import ParticleLinksBlue from './ParticleLinksBlue';
 import { AppBar, Toolbar, IconButton, Badge } from '@mui/material';
-import logo from './nexot.png';
+import logo from './bluee.png';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import InputLabel from '@mui/material/InputLabel';
+import InputAdornment from '@mui/material/InputAdornment';
+import FormControl from '@mui/material/FormControl';
+import { SmoothCorners } from 'react-smooth-corners'
 
 
 const theme = createTheme();
@@ -71,29 +76,33 @@ export default function SignIn({innerRef,stateChanger, ...rest}: any) {
               component="h1"
               variant="h6"
               color="inherit"
+              fontWeight={'bold'}
               noWrap
               sx={{ flexGrow: 1 }}
             >
-          SOC - Team Avinya
+          TEAM 915_SOC
             </Typography>
             
           </Toolbar>
         </AppBar>
       <Container component="main" maxWidth="xs" >
         <CssBaseline />
-         <img src={logo} alt="Logo" style={{width:"25rem",marginTop:"5rem",marginRight:"9rem"}}/>
+         <img src={logo} alt="Logo" style={{width:"140%",marginTop:"20%",marginRight:"20%", marginLeft:"-25%"}}/>
         <Box
           sx={{
             marginTop: 5,
             p:3,
             display: 'flex',
-            borderRadius: '16px',
-            border: 1,
+            borderRadius:'10px',
+            border:1,
+            
             backgroundColor: 'white',
+            
             flexDirection: 'column',
             alignItems: 'center',
           }}
         >
+          
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
             {/* <LockIcon/> */}
@@ -101,29 +110,52 @@ export default function SignIn({innerRef,stateChanger, ...rest}: any) {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box component="form" noValidate sx={{ mt: 1 }}>
+          <Box component="form" noValidate sx={{ mt: 1 }} >
+          
             <TextField
               margin="normal"
               required
               fullWidth
+              InputProps={{
+                style: {
+                  borderRadius: "15px",
+                   
+                  borderColor:"White",
+                  borderStyle:"inherit"
+
+                }
+              }}
+
+
               id="email"
+              
+              
+              sx={{ input:{color:'black'},borderRadius:"15px", background:'linear-gradient(90deg, #0cbff5, #6604cf)',opacity:"0.8" }  }
+              
               value={email}
-              
               onChange={(newValue) => {
-              
               setEmail(newValue.target.value);
-              
               }}
               label="Username"
+              label-font='Bold'
               name="email"
               autoComplete="email"
               autoFocus
             />
+            
             <TextField
               margin="normal"
               required
               fullWidth
+              InputProps={{
+                style: {
+                  borderRadius: "15px",
+                }
+              }}
               value={password}
+              variant='outlined'
+              
+              sx={{ input: {color:'black',opacity:'100%'},borderRadius:"15px", background: 'linear-gradient(90deg, #0cbff5, #6604cf)',opacity:"0.8" }}
               onChange={(newValue) => {
               
                 setPassword(newValue.target.value);
