@@ -48,7 +48,7 @@ export default function SignIn({innerRef,stateChanger, ...rest}: any) {
     <ParticleLinksBlue/> 
     <ThemeProvider theme={theme}>
     <CssBaseline />
-        <AppBar position="absolute"  sx={{background: '#026ced', height: '55px'}} >
+        <AppBar position="absolute"  sx={{background: '#7607ba', height: '55px'}} >
           <Toolbar
             sx={{
               pr: '24px', // keep right padding when drawer closed
