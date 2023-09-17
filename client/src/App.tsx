@@ -325,36 +325,36 @@ const svgIcon = (
     <ParticleLinksWhite/> 
     
     <ThemeProvider theme={mdTheme}>
-      <Box sx={{ display: 'flex', background: '#b0e2ff', opacity: '1' }} >
+      <Box sx={{ display: 'flex', background: '#e8d3f5', opacity: '1' }} >
         <CssBaseline />
-        <AppBar position="absolute"  sx={{background: '#026ced', height: '55px'}} >
+        <AppBar position="absolute"  sx={{background: '#7607ba', height: '8%'}} >
           <Toolbar
             sx={{
-              pr: '24px', // keep right padding when drawer closed
+              pr: '50%', // keep right padding when drawer closed
              
             }}
           >
             
             <Typography
               component="h1"
-              variant="h6"
+              variant="h4"
               color="inherit"
               noWrap
-              sx={{ flexGrow: 1 }}
+              sx={{ flexGrow: 0.5 }}
             >
               Dashboard
             </Typography>
 
             <Typography
               component="h1"
-              variant="h6"
+              variant="h4"
               color="inherit"
               noWrap
               sx={{ flexGrow: -1 }}
             >
               <Button
-        
-        variant="outlined"
+        size = "large"
+        variant="contained"
         sx={{color: 'white'}}
         component={Link} to="/kibana"
         
@@ -362,13 +362,15 @@ const svgIcon = (
       Log Analysis
         </Button>
             </Typography>
+
+			
             
-            <Typography
+            {/* <Typography
               component="h1"
               variant="h6"
               color="inherit"
               noWrap
-              sx={{ flexGrow: -1 }}
+              sx={{ flexGrow: 1 }}
             >
               <Button
         
@@ -379,7 +381,7 @@ const svgIcon = (
       >
       Logout
         </Button>
-            </Typography>
+            </Typography> */}
             
           </Toolbar>
         </AppBar>
@@ -507,7 +509,8 @@ const svgIcon = (
                   <Button
                   component="label"
                   style={{padding:"0rem",paddingTop:"0rem",height:"3.4rem",marginTop:"1.5rem"}}
-                  size='small'
+                  size='large'
+				  
                   variant="contained"
                   onClick={handleOpenDiagram}
                 >
@@ -548,7 +551,7 @@ const svgIcon = (
                 <Button
                   component="label"
                   style={{padding:"1rem",paddingTop:"1rem",height:"3.4rem",marginTop:"0rem"}}
-                  sx={{color:'black',backgroundColor:'#e6de10',"&:hover": {backgroundColor: "#ccc50e" }}}
+                  sx={{color:'black',backgroundColor:'#05a82b',"&:hover": {backgroundColor: "#ccc50e"}}}
 
                   size='small'
                   color='success'

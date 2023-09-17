@@ -1,5 +1,5 @@
 @charset "UTF-8";
-
+@import url('https://fonts.googleapis.com/css?family=Quicksand');
 :root {
   --bs-blue: #0d6efd;
   --bs-indigo: #6610f2;
@@ -71,6 +71,11 @@
 }
 
 body {
+  // display: flex;
+  // justify-content: center;
+  // align-items: center;
+  // height: 100vh;
+  // background: #eeabab;
   margin: 0;
   font-family: var(--bs-body-font-family);
   font-size: var(--bs-body-font-size);
@@ -229,12 +234,15 @@ sup {
 }
 
 a {
-  color: #0d6efd;
+  color: #60cbeb;
+  font-weight:bold ;
   text-decoration: underline;
+  border-radius:50%;
 }
 a:hover {
-  color: #0a58ca;
+  color: #000409;
 }
+
 
 a:not([href]):not([class]), a:not([href]):not([class]):hover {
   color: inherit;
@@ -328,7 +336,7 @@ label {
 }
 
 button {
-  border-radius: 0;
+  border-radius: 1%;
 }
 
 button:focus:not(:focus-visible) {

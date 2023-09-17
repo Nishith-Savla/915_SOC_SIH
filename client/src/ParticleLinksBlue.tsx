@@ -46,7 +46,8 @@ export default function ParticleLinks() {
             },
             particles: {
               color: {
-                value: "#1f6ff0"
+                value: "#7607ba",
+                
                 // value: {nodecolor}
 
               },
