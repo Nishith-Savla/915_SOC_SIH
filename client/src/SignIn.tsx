@@ -130,7 +130,7 @@ export default function SignIn({innerRef,stateChanger, ...rest}: any) {
               id="email"
               
               
-              sx={{ input:{color:'black'},borderRadius:"15px", background:'linear-gradient(90deg, #0cbff5, #6604cf)',opacity:"0.8" }  }
+              sx={{ input:{color:'black'},borderRadius:"15px", background:'linear-gradient(90deg, #0cbff5, #6604cf)',opacity:"0.8" }}
               
               value={email}
               onChange={(newValue) => {
