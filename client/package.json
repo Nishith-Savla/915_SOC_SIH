@@ -2,7 +2,7 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
- "proxy" : "https://518f-103-212-143-38.ngrok-free.app/",
+ "proxy" : "https://a4f1-103-212-143-108.ngrok-free.app/",
   "dependencies": {
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",

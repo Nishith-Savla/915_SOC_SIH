@@ -173,7 +173,7 @@ function App() {
     const params = {
       'pcap':fileLabel
     }
-    let response = await httpClient.get('/graph' ,{"headers": {
+    let response = await httpClient.post('/graph' ,{"headers": {
       "ngrok-skip-browser-warning": "69420",
     },'params':params
 } );
@@ -427,7 +427,7 @@ const svgIcon = (
                 chartType="PieChart"
                 data={protocolPie}
                 options={optionsProtocol}
-                width={"43vh"}
+                width={"38vh"}
                 height={"47.5vh"}
               />
               </Stack>
