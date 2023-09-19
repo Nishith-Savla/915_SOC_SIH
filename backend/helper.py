@@ -43,7 +43,7 @@ def load_data(filename):
 
 
 def isOT(name):
-    device_type = 'IdbT'
+    device_type = 'IT'
     name = name.split(" ")[0].lower()
     for company_name in ot_company_names:
         if name in company_name:

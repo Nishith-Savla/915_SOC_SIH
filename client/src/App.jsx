@@ -1,29 +1,10 @@
-import * as React from "react";
-import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
-import Button from "@mui/material/Button";
-import httpClient from "./httpClient";
-import Dialog, { DialogProps } from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import { Link, useNavigate } from "react-router-dom";
-import { Chart } from "react-google-charts";
-import IconButton from "@mui/material/IconButton";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import {
 	AppBar,
 	Autocomplete,
 	CircularProgress,
 	Icon,
 	LinearProgress,
-	LinearProgressProps,
 	Snackbar,
 	Stack,
 	Table,
@@ -32,26 +13,32 @@ import {
 	TableHead,
 	TableRow,
 	TextField,
-	duration,
 	tableCellClasses,
 } from "@mui/material";
-import MuiAlert, { AlertProps } from "@mui/material/Alert";
+import MuiAlert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import { ThemeProvider, createTheme, styled } from "@mui/material/styles";
+import * as React from "react";
+import { Chart } from "react-google-charts";
+import { Link } from "react-router-dom";
+import ReactFlow, { Background, Controls, MiniMap, useEdgesState, useNodesState } from "reactflow";
 import ParticleLinksWhite from "./ParticleLinksWhite";
-import dashboardlogo from "../public/industrial.png";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import ReactFlow, {
-	addEdge,
-	MiniMap,
-	Controls,
-	Background,
-	useNodesState,
-	useEdgesState,
-} from "reactflow";
+import httpClient from "./httpClient";
 
 import "reactflow/dist/style.css";
 import "./overview.css";
-import { Title } from "@mui/icons-material";
-import StaticGraph from "./staticgraph";
 
 const minimapStyle = {
 	height: 120,
@@ -79,11 +66,11 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 	},
 }));
 
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
+const Alert = React.forwardRef(function Alert(props, ref) {
 	return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-function LinearProgressWithLabel(props: LinearProgressProps & { value: number }) {
+function LinearProgressWithLabel(props) {
 	return (
 		<Box sx={{ display: "flex", alignItems: "center" }}>
 			<Box sx={{ width: "100%", mr: 1 }}>
@@ -99,18 +86,18 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
 }
 
 function App() {
-	const [file, setFile] = React.useState<any>(null);
-	const [fileLabel, setfileLabel] = React.useState<any>("Upload File");
+	const [file, setFile] = React.useState(null);
+	const [fileLabel, setfileLabel] = React.useState("Upload File");
 
-	const [vendorPie, setVendorPie] = React.useState<any>([]);
-	const [protocolPie, setProtocolPie] = React.useState<any>([]);
-	const [assetData, setassetData] = React.useState<any>([]);
-	const [cveData, setcveData] = React.useState<any>([]);
+	const [vendorPie, setVendorPie] = React.useState([]);
+	const [protocolPie, setProtocolPie] = React.useState([]);
+	const [assetData, setAssetData] = React.useState([]);
+	const [cveData, setcveData] = React.useState([]);
 
-	const [vendorlist, setvendorlist] = React.useState<any>([]);
-	const [maclist, setmaclist] = React.useState<any>([]);
-	const [iplist, setiplist] = React.useState<any>([]);
-	const [protocollist, setprotocollist] = React.useState<any>([]);
+	const [vendorlist, setvendorlist] = React.useState([]);
+	const [maclist, setmaclist] = React.useState([]);
+	const [iplist, setiplist] = React.useState([]);
+	const [protocollist, setprotocollist] = React.useState([]);
 
 	const [openGraph, setOpenGraph] = React.useState(true);
 
@@ -125,12 +112,12 @@ function App() {
 	const [openLoading, setOpenLoading] = React.useState(false);
 	const [spinnerloading, setspinnerloading] = React.useState(false);
 
-	const getCountByDeviceType = (deviceType: string) => {
-		return assetData.filter((item: any) => item.device_type === deviceType).length;
+	const getCountByDeviceType = (deviceType) => {
+		return assetData.filter((item) => item.device_type === deviceType).length;
 	};
 
-	const [itCount, setitCount] = React.useState<any>();
-	const [otCount, setotCount] = React.useState<any>();
+	const [itCount, setitCount] = React.useState();
+	const [otCount, setotCount] = React.useState();
 
 	const [progress, setProgress] = React.useState(10);
 
@@ -142,7 +129,7 @@ function App() {
 		setOpenAlert(true);
 	};
 
-	const handleCloseAlert = (event?: React.SyntheticEvent | Event, reason?: string) => {
+	const handleCloseAlert = (event, reason) => {
 		if (reason === "clickaway") {
 			return;
 		}
@@ -204,7 +191,7 @@ function App() {
 		setOpenCVETable(false);
 	};
 
-	const handleCVETable = async (e: any) => {
+	const handleCVETable = async (e) => {
 		console.log(e);
 
 		let response = await httpClient.get("/cve/" + e, {
@@ -225,7 +212,7 @@ function App() {
 		}
 	};
 
-	const handleFileUpload = async (e: any) => {
+	const handleFileUpload = async (e) => {
 		const file = e.target.files[0];
 		setFile(file);
 		setfileLabel(file.name);
@@ -247,36 +234,32 @@ function App() {
 				console.log(response.data["connections"]);
 				setVendorPie(response.data["vendor_plots"]);
 				setProtocolPie(response.data["protocol_plots"]);
-				setassetData(response.data["connections"]);
+				setAssetData(response.data["connections"]);
 				setvendorlist(
-					Array.from(
-						new Set(response.data["connections"].map((item: { Vendor: any }) => item.Vendor))
-					).map((vendor) => ({ label: vendor }))
+					Array.from(new Set(response.data["connections"].map((item) => item.Vendor))).map(
+						(vendor) => ({ label: vendor })
+					)
 				);
 				setmaclist(
-					Array.from(
-						new Set(response.data["connections"].map((item: { MAC: any }) => item.MAC))
-					).map((vendor) => ({ label: vendor }))
+					Array.from(new Set(response.data["connections"].map((item) => item.MAC))).map(
+						(vendor) => ({ label: vendor })
+					)
 				);
 				setiplist(
-					Array.from(new Set(response.data["connections"].map((item: { IP: any }) => item.IP))).map(
+					Array.from(new Set(response.data["connections"].map((item) => item.IP))).map(
 						(vendor) => ({ label: vendor })
 					)
 				);
 				setprotocollist(
-					Array.from(
-						new Set(response.data["connections"].map((item: { Protocol: any }) => item.Protocol))
-					).map((vendor) => ({ label: vendor }))
+					Array.from(new Set(response.data["connections"].map((item) => item.Protocol))).map(
+						(vendor) => ({ label: vendor })
+					)
 				);
-				setitCount(
-					response.data["connections"].filter((item: any) => item.device_type === "IT").length
-				);
-				setotCount(
-					response.data["connections"].filter((item: any) => item.device_type === "OT").length
-				);
+				setitCount(response.data["connections"].filter((item) => item.device_type === "IT").length);
+				setotCount(response.data["connections"].filter((item) => item.device_type === "OT").length);
 
 				handleCloseGraph();
-				// setassetData(response.data['connections'])
+				// setAssetData(response.data['connections'])
 			} else {
 				setspinnerloading(false);
 
@@ -605,6 +588,15 @@ function App() {
 													>
 														<Autocomplete
 															disablePortal
+															onChange={(_, value) => {
+																if (value) {
+																	setAssetData((prevAssetData) =>
+																		prevAssetData.filter((item) => item.MAC === value.label)
+																	);
+																} else {
+																	setAssetData((prevAssetData) => prevAssetData);
+																}
+															}}
 															id="combo-box-demo"
 															options={maclist}
 															sx={{ width: 300 }}
@@ -685,7 +677,7 @@ function App() {
 													</TableRow>
 												</TableHead>
 												<TableBody>
-													{assetData?.map((row: any, index: any) => (
+													{assetData?.map((row, index) => (
 														<StyledTableRow key={index}>
 															<StyledTableCell>{row.MAC}</StyledTableCell>
 															<StyledTableCell align="center">{row.Vendor}</StyledTableCell>
@@ -835,7 +827,7 @@ function App() {
 								</TableRow>
 							</TableHead>
 							<TableBody>
-								{cveData?.map((row: any, index: any) => (
+								{cveData?.map((row, index) => (
 									<StyledTableRow key={index}>
 										<StyledTableCell>{row.cve.CVE_data_meta.ID}</StyledTableCell>
 										<StyledTableCell align="left">

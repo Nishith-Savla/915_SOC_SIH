@@ -1,9 +1,7 @@
-import React from 'react'
-import { BrowserRouter,Routes, Route } from "react-router-dom"
-import SignIn from './SignIn'
+import { BrowserRouter, Route, Routes } from "react-router-dom"
 import App from './App'
 import NotFound from './NotFound'
-// import Start from './Start'
+import SignIn from './SignIn'
 
 const Router = () =>
 {
