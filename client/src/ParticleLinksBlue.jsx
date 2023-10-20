@@ -1,13 +1,13 @@
 import * as React from 'react';
-import Particles from "react-tsparticles"; 
+import Particles from "react-tsparticles";
 import { loadFull } from "tsparticles";
 
-const particlesInit = async (main: any) => { 
-    console.log(main); 
-    // you can initialize the tsParticles instance (main) here, adding custom shapes or presets 
-    // this loads the tsparticles package bundle, it's the easiest method for getting everything ready 
-    // starting from v2 you can add only the features you need reducing the bundle size 
-    await loadFull(main); 
+const particlesInit = async (main) => {
+    console.log(main);
+    // you can initialize the tsParticles instance (main) here, adding custom shapes or presets
+    // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
+    // starting from v2 you can add only the features you need reducing the bundle size
+    await loadFull(main);
   };
 
 export default function ParticleLinks() {
@@ -15,10 +15,10 @@ export default function ParticleLinks() {
     // const [nodecolor, setnodecolor] = React.useState<string>(null);
 
     return(
-        <Particles 
-        id="tsparticles" 
-        init={particlesInit} 
-        // loaded={particlesLoaded} 
+        <Particles
+        id="tsparticles"
+        init={particlesInit}
+        // loaded={particlesLoaded}
         options={
           {
             fpsLimit: 120,
@@ -46,18 +46,19 @@ export default function ParticleLinks() {
             },
             particles: {
               color: {
-                value: "#ffffff"
+                value: "#7607ba",
+
                 // value: {nodecolor}
 
               },
               links: {
                 // color: {LinkColor},
-                color: "#ffffff",
+                color: "#20a3fa",
 
                 distance: 150,
                 enable: true,
-                opacity: 0.75,
-                width: 2
+                opacity: 0.5,
+                width: 1
               },
               collisions: {
                 enable: false
@@ -89,8 +90,8 @@ export default function ParticleLinks() {
             },
             detectRetina: true
           }
-        } 
-      /> 
+        }
+      />
     );
 }
 
